@@ -1,0 +1,13 @@
+[Unit]
+Description=Air Quality Python logging script
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/code/venv/bin/python3 /code/AQI_PIZERO/airqread_new.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
