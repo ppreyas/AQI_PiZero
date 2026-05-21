@@ -1,7 +1,7 @@
 # PiZero Air Quality Meter
-Monitor and log air quality with this Pi Zero W powered air quality meter, using PMS7003 and BME688 sensors and publish the results via MQTT to Home Assistant.
-
-### Source: Heavily influenced from the work done by Electro Dan here:  https://electro-dan.co.uk/pc/raspberry-pi-air-quality-meter
+Monitor and log air quality with this Pi Zero WH powered air quality meter, using PMS7003 and BME688 sensors and publish the results via MQTT to Home Assistant.
+ 
+Source: Heavily influenced from the work done by Electro Dan here:  https://electro-dan.co.uk/pc/raspberry-pi-air-quality-meter
 
 
 # Operating System
@@ -101,6 +101,7 @@ source ./venv/bin/activate
 ```
 
 Validate installation with the below command:
+
 ```
 python3 -c "import busio; print('busio OK')"
 busio OK
@@ -129,9 +130,7 @@ The code is passing &id_regs (pointer-to-array) but the function expects uint8_t
 
 ## Clone this repo
 
-`git clone https://github.com/electro-dan/PiZero_Air_Quality_Meter.git`
-
-`mv PiZero_Air_Quality_Meter/* ~`
+`git clone https://github.com/ppreyas/AQI_PiZero.git`
 
 # Debug if the sensors are working ok?
 Enable I2C using raspi-config
@@ -172,13 +171,13 @@ SCL	Pin 5	GPIO 3
 SDO	GND or 3.3V	sets address
 ```
 
+```
 BME688:
 Measure: Pin 3 vs Pin 9 → should be ~3.0V
 Measure: Pin 5 vs Pin 9 → should be ~3.0V
 Measure: Pin 1 vs Pin 9 (GND) → should read 3.3V
 
-PMS7003
-```
+
 PMS7003 pin	Pi Zero pin
 VCC (5V)	Pin 2 or 4
 GND	Pin 6
@@ -214,7 +213,7 @@ b'BM\x00\x1c\x00\x07\x00\x10\x00\x14\x00\x07\x00\x10\x00\x14\x03=\x02\x7f\x00@\x
 Test Airqread.py by running:
 
 ```
-python3 PiZero_Air_Quality_Meter/airqread.py
+python3 AQI_PiZero/airqread.py
 [INFO] 2026-05-18 17:31:46,764 Starting BME688 setup
 INITIALIZED BME68X
 VARIANT BME688
@@ -266,7 +265,7 @@ BSEC SENSOR CONTROL RSLT 100 ┘   loop running normally (100 = success)
 ## Wait 24h ##. 
 Put hand cleanser gel (60 / 70% alcohol) in front of sensor for a short while during burn in.
 
-Copy new conf_ and state_ files from conf subfolder to conf subfolder in home (or where PiZero_Air_Quality_Meter is cloned to).
+Copy new conf_ and state_ files from conf subfolder to conf subfolder in home (or where AQI_PiZero is cloned to).
 
 Update airqread.py with filename.
 
@@ -275,7 +274,7 @@ Update airqread.py with filename.
 
 /dev/ttyS0 might not exist and this will be based on your configuration. Check if /dev/serial0. Update this in airqread.py by running this below:
 
-`sed -i "s|/dev/ttyS0|/dev/serial0|g" /code/PiZero_Air_Quality_Meter/airqread.py`
+`sed -i "s|/dev/ttyS0|/dev/serial0|g" /code/AQI_PiZero/airqread.py`
 
 The below might also be required based on which I2C bus number your device is running on:
 
@@ -291,7 +290,7 @@ Execute Airqread.py by running:
 Sample Output:
 
 ```
-(venv) root@pizeroaqi:/code# python3 PiZero_Air_Quality_Meter/airqread.py
+(venv) root@pizeroaqi:/code# python3 AQI_PiZero/airqread.py
 [INFO] 2026-05-18 17:53:57,382 Starting BME688 setup
 INITIALIZED BME68X
 VARIANT BME688
@@ -313,7 +312,7 @@ BSEC SENSOR CONTROL RSLT 100
 [INFO] 2026-05-18 18:00:00,783 DB Write
 ```
 
-# InfluxDB
+# InfluxDB - I moved away from using influx to sending data to HA via mqtt
 
 Run the below commands:
 
@@ -371,3 +370,7 @@ Log messages at Home Assistant side:
 2026-05-21 00:52:00: Sending PUBLISH to 7cg3Y4QNSZq3gYudWqEKg6 (d0, q0, r0, m0, 'air_quality/state_data', ... (190 bytes))
 ```
 
+# Dashboard
+
+![AQIDashboard](image.png)
+![IAQ-Graph](image-1.png)
