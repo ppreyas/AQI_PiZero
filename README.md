@@ -151,6 +151,8 @@ Validate if BME688 is working by running the below: i2cdetect -y 1 or i2cdetect 
 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 70: -- -- -- -- -- -- 76 --                         
 
+```
+
 2. Confirm I2C kernel modules are loaded
 lsmod | grep i2c
 
