@@ -1,5 +1,5 @@
-# PiZero Air Quality Meter
-Monitor and log air quality with this Pi Zero WH powered air quality meter, using PMS7003 and BME688 sensors and publish the results via MQTT to Home Assistant.
+# PiZero Based Air Quality Meter
+Monitor and log air quality real-time with this Pi Zero WH powered air quality meter, using PMS7003 and BME688 sensors and publish the results via MQTT to Home Assistant.
  
 Source: Heavily influenced from the work done by Electro Dan here:  https://electro-dan.co.uk/pc/raspberry-pi-air-quality-meter
 
@@ -31,7 +31,6 @@ in /boot/firmware/config.txt
 
 ```
 dtparam=i2c_arm=on
-
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=off
 
@@ -328,7 +327,6 @@ time                breath_voc_accuracy breath_voc_equivalent co2_accuracy co2_e
 ----                ------------------- --------------------- ------------ -------------- --------------     ----------------------- --------          --- ------------ -------- ---- ----- ----- ------------ -----------
 1779123600818997245 2                   0.3426457643508911    2            400            -2.082138776779175 2                       60.97412872314453 0   2            Bedroom  21   7     18    100000.125   18.112632751464844
 ```
-
 
 
 
