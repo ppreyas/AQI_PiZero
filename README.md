@@ -132,6 +132,7 @@ The code is passing &id_regs (pointer-to-array) but the function expects uint8_t
 `git clone https://github.com/ppreyas/AQI_PiZero.git`
 
 # Debug if the sensors are working ok?
+
 Enable I2C using raspi-config
 Do: raspi-config → Interface Options → I2C → Enable → reboot
 
@@ -154,7 +155,6 @@ Validate if BME688 is working by running the below: i2cdetect -y 1 or i2cdetect 
 ```
 
 2. Confirm I2C kernel modules are loaded
-lsmod | grep i2c
 
 ```
 (venv) root@pizeroaqi:/code/p-sensors/src/1.3.0/BurnIn# lsmod | grep i2c
@@ -254,7 +254,7 @@ SET BSEC STATE RSLT 0       ← burn-in state file loaded (0 = success)
 SET BME68X CONFIG           ┐
 SET HEATER CONFIG           ├── repeating every ~3 seconds = BSEC control
 BSEC SENSOR CONTROL RSLT 100 ┘   loop running normally (100 = success)
-
+```
 
 ## Burn-In
 `git clone https://github.com/mcalisterkm/p-sensors`
@@ -263,7 +263,7 @@ BSEC SENSOR CONTROL RSLT 100 ┘   loop running normally (100 = success)
 
 `nohup python3 burn_in.py &`
 
-## Wait 24h ##. 
+## Wait 24h 
 Put hand cleanser gel (60 / 70% alcohol) in front of sensor for a short while during burn in.
 
 Copy new conf_ and state_ files from conf subfolder to conf subfolder in home (or where AQI_PiZero is cloned to).
