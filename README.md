@@ -1,7 +1,7 @@
-# PiZero_Air_Quality_Meter
-Monitor and log air quality with this Pi Zero W powered air quality meter, using PMS7003 and BME688 sensors. Web based interface.
+# PiZero Air Quality Meter
+Monitor and log air quality with this Pi Zero W powered air quality meter, using PMS7003 and BME688 sensors and publish the results via MQTT to Home Assistant.
 
-#Source: Heavily influenced from https://electro-dan.co.uk/pc/raspberry-pi-air-quality-meter
+# Source: Heavily influenced from the work done by Electro Dan here:  https://electro-dan.co.uk/pc/raspberry-pi-air-quality-meter
 
 
 # Operating System
@@ -128,6 +128,7 @@ The code is passing &id_regs (pointer-to-array) but the function expects uint8_t
 `python3 setup.py install`
 
 ## Clone this repo
+
 `git clone https://github.com/electro-dan/PiZero_Air_Quality_Meter.git`
 
 `mv PiZero_Air_Quality_Meter/* ~`
@@ -253,11 +254,8 @@ SET BSEC STATE RSLT 0       ← burn-in state file loaded (0 = success)
 SET BME68X CONFIG           ┐
 SET HEATER CONFIG           ├── repeating every ~3 seconds = BSEC control
 BSEC SENSOR CONTROL RSLT 100 ┘   loop running normally (100 = success)
-```
 
 
-
-```
 ## Burn-In
 `git clone https://github.com/mcalisterkm/p-sensors`
 
@@ -335,85 +333,41 @@ time                breath_voc_accuracy breath_voc_equivalent co2_accuracy co2_e
 
 
 
-## Web Service NGINX reverse proxy
-`sudo apt install -y nginx`
+## Integrating with Home Assistant 
 
-`sudo cp ~/nginx/sites-available/default /etc/nginx/sites-available/default`
+I have used Mosquitto MQTT broker here installed on my Raspberry PI 4B running HAOS. Configuration is pretty simple with just using the MQTT port of your choice [1883 by default] and creating a username and password as a login in the configuration screen.
 
-`sudo systemctl restart nginx.service`
+I have passed the below values as an environment file to be loaded during execution.
 
-## Setup Services
-`sudo cp services/system/*.service /etc/systemd/system/`
+MQTT_USER=<username>
+MQTT_PASSWORD=<password>
+MQTT_HOST=<MQTT Broker host i.e., my Home Assistant IP>
+MQTT_PORT=<MQTT Broker Port>
+MQTT_TOPIC=<name of the topic>
 
-`sudo systemctl daemon-reload`
+Logs on HAOS when messages get published from PI Zero:
 
-`sudo systemctl enable bottleweb.service`
-
-`sudo systemctl enable airqread.service`
-
-## Recommended
-
-Automatic updates
-
-`sudo apt-get install unattended-upgrades`
-
-`sudo dpkg-reconfigure --priority=low unattended-upgrades`
-
-Firewall
-
-`sudo apt install ufw`
-
-`sudo ufw allow 22`
-
-`sudo ufw limit 22`
-
-`sudo ufw allow 80`
-
-`sudo ufw allow 443`
-
-`sudo ufw enable`
-
-Reduce SD card writes
-
-Adjust journald.conf and replace rsyslog
-
-`sudo nano /etc/systemd/journald.conf`
 
 ```
-[Journal]
-Storage=volatile
-...
-RuntimeMaxUse=64M
-...
-ForwardToConsole=no
-ForwardToWall=no
-...
+May 21 00:45:00 pizeroaqi python3[4537]: [INFO] 2026-05-21 00:45:00,005 DB Write
+May 21 00:45:00 pizeroaqi python3[4537]: [INFO] 2026-05-21 00:45:00,017 MQTT published: {'pm1_0': 0, 'pm2_5': 2, 'pm10': 4, 'iaq': 34.9, 'temperature': 15.8, 'humid>
+May 21 00:52:00 pizeroaqi python3[4537]: [INFO] 2026-05-21 00:52:00,907 DB Write
+May 21 00:52:00 pizeroaqi python3[4537]: [INFO] 2026-05-21 00:52:00,915 MQTT published: {'pm1_0': 0, 'pm2_5': 2, 'pm10': 2, 'iaq': 35.5, 'temperature': 15.8, 'humid>
 ```
 
-`sudo systemctl restart systemd-journald`
-
-`sudo apt-get install -y busybox-syslogd`
-
-`sudo dpkg --purge rsyslog`
-
-# Tweak influxdb
-
-`sudo nano /etc/influxdb/influxdb.conf`
+Log messages at Home Assistant side:
 
 ```
+2026-05-21 00:45:00: Received PUBLISH from auto-C92343E9-9A1E-6993-1A9A-57DB633689A0 (d0, q0, r0, m0, 'air_quality/state_data', ... (190 bytes))
+2026-05-21 00:45:00: Sending PUBLISH to 7cg3Y4QNSZq3gYudWqEKg6 (d0, q0, r0, m0, 'air_quality/state_data', ... (190 bytes))
+2026-05-21 00:45:24: Received PINGREQ from auto-C92343E9-9A1E-6993-1A9A-57DB633689A0
+2026-05-21 00:45:24: Sending PINGRESP to auto-C92343E9-9A1E-6993-1A9A-57DB633689A0
+2026-05-21 00:45:50: Received PINGREQ from 7cg3Y4QNSZq3gYudWqEKg6
+2026-05-21 00:45:50: Sending PINGRESP to 7cg3Y4QNSZq3gYudWqEKg6
 ...
-  query-log-enabled = false
-...
-  cache-max-memory-size = "100m"
-...
-  cache-snapshot-memory-size = "25m"
-...
-  cache-snapshot-write-cold-duration = "1h"
-...
-[monitor]
-  # Whether to record statistics internally.
-  store-enabled = false
-...
+2026-05-21 00:51:50: Received PINGREQ from 7cg3Y4QNSZq3gYudWqEKg6
+2026-05-21 00:51:50: Sending PINGRESP to 7cg3Y4QNSZq3gYudWqEKg6
+2026-05-21 00:52:00: Received PUBLISH from auto-C92343E9-9A1E-6993-1A9A-57DB633689A0 (d0, q0, r0, m0, 'air_quality/state_data', ... (190 bytes))
+2026-05-21 00:52:00: Sending PUBLISH to 7cg3Y4QNSZq3gYudWqEKg6 (d0, q0, r0, m0, 'air_quality/state_data', ... (190 bytes))
 ```
 
-`sudo systemctl restart influxd.service`
